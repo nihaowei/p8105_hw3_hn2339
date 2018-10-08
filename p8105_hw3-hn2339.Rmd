@@ -1,0 +1,35 @@
+---
+title: "p8105_hw2_hn2339"
+author: "Haowei Ni"
+date: "2018/10/7"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1 
+
+```{r}
+library(p8105.datasets)
+    data(brfss_smart2010) 
+    BRFSS = janitor::clean_names(brfss_smart2010)
+```
+
+## Question 2 
+
+```{r}
+library(p8105.datasets)
+    data(instacart) 
+    instacart = janitor::clean_names(instacart)
+```
+
+## Question 3 
+
+```{r}
+library(p8105.datasets)
+    data(ny_noaa) 
+    ny_noaa = janitor::clean_names(ny_noaa)
+```
+
