@@ -132,8 +132,9 @@ spread(key = order_dow, value = mean)
 ```{r}
 library(p8105.datasets)
     data(ny_noaa) 
+    most_snow = tail(names(sort(table(ny_noaa$snow))), 1)
     ny_noaa = janitor::clean_names(ny_noaa) %>% 
-    separate(date, into = c("year", "month", "day"), sep = "-")
-    
+    separate(date, into = c("year", "month", "day"), sep = "-") %>%
+    rename( prcp_mm = prcp, snow_in = snow, tmax_F = tmax, tmin_F = tmin)
 ```
-
+The most common observed value in snowfall is `r most_snow` 
