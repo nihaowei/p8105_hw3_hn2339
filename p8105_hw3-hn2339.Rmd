@@ -87,19 +87,37 @@ library(p8105.datasets)
               mean_verygood = mean(`Very good`),
               mean_poor = mean(Poor)) %>%
     gather(key = mean_value, value = mean_proportion, mean_excellent : mean_poor)
+    ggplot(five_panel, aes(x= mean_proportion, fill = mean_value)) + 
+  geom_density() +
+  facet_grid(~mean_value)
 ```
 
-    
-  
-
-
-## Question 2 
+## Question 2  
 
 ```{r}
 library(p8105.datasets)
     data(instacart) 
-    instacart = janitor::clean_names(instacart)
+    # find the distinct aisle 
+    aisle_distinct = distinct(instacart, aisle, .keep_all = TRUE)  
+    most = tail(names(sort(table(instacart$aisle))), 1)
+    # make a histogram 
+    ggplot(data = instacart, aes(x = aisle_id)) +
+      geom_histogram()
 ```
+There are totally `r nrow(aisle_distinct)` in the there. 
+The most ordered item from aisle is `r most`
+
+```{r}
+instacart %>%
+    group_by(aisle, product_name) %>%
+    filter(aisle == "baking ingredients" | aisle == "dog food care" | aisle == "packaged vegetables fruits") %>%
+    count() %>%
+    group_by(aisle) %>% 
+    arrange(n) %>%
+  filter(min_rank(desc(n)) < 2)
+    
+```
+
 
 ## Question 3 
 
