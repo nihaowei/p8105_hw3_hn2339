@@ -58,12 +58,35 @@ library(p8105.datasets)
     filter(topic == "Overall Health") %>%
     mutate(response = forcats::fct_relevel(response, c("Excellent", "Very good", "Good", "Fair", "Poor"))) %>%
     group_by(locationabbr) %>%
+    #filter to only NY and year 2002, 2006, 2010 
     filter(locationabbr == "NY") %>%
     filter(year == "2002" | year == "2006" | year == "2010") %>%
     select(-c(class, topic, question, sample_size, confidence_limit_low:geo_location)) %>%
     spread(key = response, value = data_value) %>%
+    #make table 
+    group_by(year) %>%
     summarize(mean_excellent = mean(Excellent),
-              sd_excellent = sd(Excellent))
+              sd_excellent = sd(Excellent),
+              )
+```
+
+```{r}
+library(p8105.datasets)
+    data(brfss_smart2010) 
+    # clean the name to lower case
+    five_panel = janitor::clean_names(brfss_smart2010) %>% 
+    # focus on overall health 
+    filter(topic == "Overall Health") %>%
+    mutate(response = forcats::fct_relevel(response, c("Excellent", "Very good", "Good", "Fair", "Poor"))) %>%
+    group_by(year, locationabbr) %>% 
+    select(-c(class, topic, question, sample_size, confidence_limit_low:geo_location)) %>%
+    spread(key = response, value = data_value) %>%
+    summarize(mean_excellent = mean(Excellent ),
+              mean_fair = mean(Fair),
+              mean_good = mean(Good),
+              mean_verygood = mean(`Very good`),
+              mean_poor = mean(Poor)) %>%
+    gather(key = mean_value, value = mean_proportion, mean_excellent : mean_poor)
 ```
 
     
