@@ -9,13 +9,67 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
 ## Question 1 
 
 ```{r}
 library(p8105.datasets)
     data(brfss_smart2010) 
-    BRFSS = janitor::clean_names(brfss_smart2010)
+    # clean the name to lower case
+    BRFSS = janitor::clean_names(brfss_smart2010) %>% 
+    # focus on overall health and 2002 
+    filter(topic == "Overall Health") %>%
+    mutate(response = forcats::fct_relevel(response, c("Excellent", "Very good", "Good", "Fair", "Poor")))
+    filter(year == "2002") %>%
+    # find state observed in seven locations 
+    group_by(locationabbr, locationdesc) %>%
+    summarize(number = n()) %>%
+    group_by(locationabbr) %>%
+    summarize(number = n()) %>%
+    filter(number == 7)
+    #CT, FL, NC
 ```
+The states that are observed at seven places are CT, FL, NC 
+```{r}
+library(p8105.datasets)
+    data(brfss_smart2010) 
+    # clean the name to lower case
+    observation = janitor::clean_names(brfss_smart2010) %>% 
+    # focus on overall health 
+    filter(topic == "Overall Health") %>%
+    mutate(response = forcats::fct_relevel(response, c("Excellent", "Very good", "Good", "Fair", "Poor"))) %>%
+    group_by(year, locationabbr) %>%
+    summarize(number = n())
+    #make the spaghetti plot 
+    ggplot(data = observation, aes(x = year, y = number, group = locationabbr)) +
+      geom_line()
+```
+
+```{r}
+library(p8105.datasets)
+    data(brfss_smart2010) 
+    # clean the name to lower case
+    excellent_table = janitor::clean_names(brfss_smart2010) %>% 
+    # focus on overall health 
+    filter(topic == "Overall Health") %>%
+    mutate(response = forcats::fct_relevel(response, c("Excellent", "Very good", "Good", "Fair", "Poor"))) %>%
+    group_by(locationabbr) %>%
+    filter(locationabbr == "NY") %>%
+    filter(year == "2002" | year == "2006" | year == "2010") %>%
+    select(-c(class, topic, question, sample_size, confidence_limit_low:geo_location)) %>%
+    spread(key = response, value = data_value) %>%
+    mutate(proportion = Excellent / (Excellent + `Very good` + Poor + Good + Fair)) %>%
+    summarize(mean_excellent = mean(proportion),
+              sd_excellent = sd(proportion))
+```
+
+    
+  
+
 
 ## Question 2 
 
