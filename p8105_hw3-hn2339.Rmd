@@ -118,12 +118,22 @@ instacart %>%
     
 ```
 
+```{r}
+instacart %>%
+  filter(product_name == "Coffee Ice Cream" | product_name == "Pink Lady Apple") %>%
+  group_by(product_name, order_dow) %>%
+  summarize(
+    mean = mean(order_hour_of_day)) %>% 
+spread(key = order_dow, value = mean)
+```
 
 ## Question 3 
 
 ```{r}
 library(p8105.datasets)
     data(ny_noaa) 
-    ny_noaa = janitor::clean_names(ny_noaa)
+    ny_noaa = janitor::clean_names(ny_noaa) %>% 
+    separate(date, into = c("year", "month", "day"), sep = "-")
+    
 ```
 
