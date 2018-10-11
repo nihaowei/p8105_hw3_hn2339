@@ -31,9 +31,11 @@ library(p8105.datasets)
     group_by(locationabbr) %>%
     summarize(number = n()) %>%
     filter(number == 7)
+    # organize the table 
+    knitr::kable(BRFSS)
     #CT, FL, NC
 ```
-The states that are observed at seven places are CT, FL, NC 
+The states that are observed at seven places are CT, FL, NC and number is 7.
 ```{r}
 library(p8105.datasets)
     data(brfss_smart2010) 
@@ -48,7 +50,7 @@ library(p8105.datasets)
     ggplot(data = observation, aes(x = year, y = number, color = locationabbr)) +
       geom_line()
 ```
-
+The spaghetti shows that most of the states have number of observations between 0 and 100. Two outliers were also shown in state Florida between year 2006-2008 and 2010.Through the years, there were no big changes among most of the states because the trend line is smooth.  
 ```{r}
 library(p8105.datasets)
     data(brfss_smart2010) 
@@ -68,6 +70,7 @@ library(p8105.datasets)
     summarize(mean_excellent = mean(Excellent),
               sd_excellent = sd(Excellent),
               )
+    knitr::kable(excellent_table)
 ```
 
 ```{r}
@@ -82,16 +85,18 @@ library(p8105.datasets)
     select(-c(class, topic, question, sample_size, confidence_limit_low:geo_location)) %>%
     spread(key = response, value = data_value) %>%
     summarize(mean_excellent = mean(Excellent ),
-              mean_fair = mean(Fair),
-              mean_good = mean(Good),
               mean_verygood = mean(`Very good`),
+              mean_good = mean(Good),
+              mean_fair = mean(Fair),
               mean_poor = mean(Poor)) %>%
     gather(key = mean_value, value = mean_proportion, mean_excellent : mean_poor)
     ggplot(five_panel, aes(x= year, y = mean_proportion)) + 
   geom_violin(aes(fill = factor(year))) +
   facet_grid(~mean_value) + 
-  ggtitle("Distribution of proportion of response")
+  ggtitle("Distribution of proportion of response") +
+    labs(x = "Year", y = "State Level Average of Proportion ")
 ```
+This is a five panel violin plot. The plot is separated by different responses from Excellent to Poor. From the graph, we can see that the average proportion of "poor" is the lowest, which is below 10. The proportion of "Very good" is the highest. There proportion of each responses were maintained in a relative stable level. 
 
 ## Question 2  
 
@@ -102,6 +107,7 @@ library(p8105.datasets)
     aisle_distinct = distinct(instacart, aisle, .keep_all = TRUE)  
     most = tail(names(sort(table(instacart$aisle))), 1)
 ```
+The data frame contain 1384617 objects and 9 variables. The key variables are product names, aisles and order number/dow. For example, "orgainic hass avocado" is in the "fresh fruit" aisle category. It was ordered on 4th day of the week and 4 in total of number. 
 There are totally `r nrow(aisle_distinct)` in the there. 
 The most ordered item from aisle is `r most`
 ```{r}
@@ -118,7 +124,7 @@ instacart %>%
       )
 
 ```
-
+This is a scatterplot with Aisle id on the x axe and Number of Orders on the y axe. Most of the Aisle ID have order number between 0 ~ 25000. There are several outliers. And 2 of them reached 150000. 
 ```{r}
 instacart %>%
     group_by(aisle, product_name) %>%
@@ -126,7 +132,8 @@ instacart %>%
     count() %>%
     group_by(aisle) %>% 
     arrange(n) %>%
-  filter(min_rank(desc(n)) < 2)
+  filter(min_rank(desc(n)) < 2) %>% 
+    knitr::kable()
 ```
 
 ```{r}
@@ -135,7 +142,8 @@ instacart %>%
   group_by(product_name, order_dow) %>%
   summarize(
     mean = mean(order_hour_of_day)) %>% 
-spread(key = order_dow, value = mean)
+spread(key = order_dow, value = mean) %>% 
+  knitr::kable()
 ```
 
 ## Question 3 
@@ -156,9 +164,7 @@ NY_NOAA = ny_noaa %>%
 group_by(id, month) %>%
     filter(month == "01" | month == "07" ) %>%
     mutate(tmax_F = as.numeric(tmax_F, na.rm =TRUE)) %>%
-    mutate(tmin_F = as.numeric(tmin_F, na.rm =TRUE)) %>%
-    mutate(temp = (tmax_F + tmin_F)/2 ) %>%
-    summarize(mean_temp = mean(temp)) %>%
+    summarize(mean_temp = mean(tmax_F)) %>%
     na.omit(mean_temp) 
     #make a histogram 
     ggplot(NY_NOAA, aes(x = id, y = mean_temp)) +
