@@ -45,7 +45,7 @@ library(p8105.datasets)
     group_by(year, locationabbr) %>%
     summarize(number = n())
     #make the spaghetti plot 
-    ggplot(data = observation, aes(x = year, y = number, group = locationabbr)) +
+    ggplot(data = observation, aes(x = year, y = number, color = locationabbr)) +
       geom_line()
 ```
 
@@ -87,9 +87,10 @@ library(p8105.datasets)
               mean_verygood = mean(`Very good`),
               mean_poor = mean(Poor)) %>%
     gather(key = mean_value, value = mean_proportion, mean_excellent : mean_poor)
-    ggplot(five_panel, aes(x= mean_proportion, fill = mean_value)) + 
-  geom_density() +
-  facet_grid(~mean_value)
+    ggplot(five_panel, aes(x= year, y = mean_proportion)) + 
+  geom_violin(aes(fill = factor(year))) +
+  facet_grid(~mean_value) + 
+  ggtitle("Distribution of proportion of response")
 ```
 
 ## Question 2  
@@ -100,13 +101,23 @@ library(p8105.datasets)
     # find the distinct aisle 
     aisle_distinct = distinct(instacart, aisle, .keep_all = TRUE)  
     most = tail(names(sort(table(instacart$aisle))), 1)
-    # make a histogram 
-    ggplot(data = instacart, aes(x = aisle_id)) +
-      geom_histogram() +
-      ggtitle("The number of items ordered in each aisle")
 ```
 There are totally `r nrow(aisle_distinct)` in the there. 
 The most ordered item from aisle is `r most`
+```{r}
+ # make a scatterplot
+instacart %>% 
+    group_by(aisle_id) %>% 
+    summarize(number = n()) %>% 
+    ggplot(aes(x = aisle_id, y = number)) +
+      geom_point() +
+      ggtitle("The number of items ordered in each aisle") +
+      labs(
+        x = "Aisle id",
+        y = "Number of Orders"
+      )
+
+```
 
 ```{r}
 instacart %>%
