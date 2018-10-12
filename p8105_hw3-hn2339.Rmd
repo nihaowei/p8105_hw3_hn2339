@@ -1,5 +1,5 @@
 ---
-title: "p8105_hw2_hn2339"
+title: "p8105_hw3_hn2339"
 author: "Haowei Ni"
 date: "2018/10/7"
 output: github_document
@@ -170,8 +170,11 @@ group_by(id, month) %>%
     ggplot(NY_NOAA, aes(x = id, y = mean_temp)) +
       geom_point() +
     # separate the plot into two by months 
-      facet_grid(~month) +
-      viridis::scale_fill_viridis(discrete = TRUE)
+      facet_grid(~month) 
+    ggplot(NY_NOAA, aes(x = factor(month), y = mean_temp)) +
+      geom_boxplot()
+  
+    
 ```
 There is no outliers in the January and July graph. 
 But since the station has very long name, the xlab is hard to be interpretable.
@@ -181,6 +184,7 @@ But since the station has very long name, the xlab is hard to be interpretable.
   na.omit(tmin_F) %>%
   mutate(tmax_F = as.numeric(tmax_F, na.rm =TRUE)) %>% 
   mutate(tmin_F = as.numeric(tmin_F, na.rm =TRUE)) 
+  # make a hex gram 
   temp = ggplot(NY_noaa, aes(x = tmax_F, y = tmin_F)) +
   geom_hex() +
   ggtitle("tmax vs tmin for full dataset") +
@@ -193,6 +197,7 @@ But since the station has very long name, the xlab is hard to be interpretable.
 NY_plot = ny_noaa %>% 
   filter(snow_in > 0, snow_in < 100) 
   snow = ggplot(NY_plot, aes(x = snow_in, fill = year)) + 
+  # make a density plot to show the distribution 
   geom_density(alpha = 0.5) +
   ggtitle("Snowfall Distribution by year") + 
     labs(x = "Snowfall",
@@ -200,8 +205,8 @@ NY_plot = ny_noaa %>%
 ```
 
 ```{r}
-# use patchwork to combine two plots together into a two panel 
+# use patchwork to combine two plots together into a two panel
 temp + snow 
 ```
-
+The hexagon allows patterns in the data set. It is closer to a circle than the sqaures, so it requires less from orientation bias, and it is more compact, so it therefore provides more accurate sampling. The hexagon tmax vs tmin graph shows that Tmax are between -250 ~ 250(Celcius), Tmin are between -400~400(0.1 Celcius). There are several outliers in the graph. The distribution graph on the right shows that most of the snowfall are between 0 and 25nm because most of the time NY is not in winter season. But it is not a smooth descending line shows that there are some months with unusual high snowfall.  
 
